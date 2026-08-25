@@ -22,7 +22,7 @@ echo <<<HTML
         </div>
 
         <div class="auth-card">
-            <form action="#" method="post">
+            <form action="../Database/login_process.php" method="post">
 
                 <div class="field">
                     <label for="email">E-mail</label>

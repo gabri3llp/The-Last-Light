@@ -4,6 +4,21 @@ require_once '../Database/config.php';
 
 $noticeId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
+//Getting Comments
+
+$commentsSql = "SELECT c.comment, c.created_at, u.username, u.role
+                FROM comments c
+                INNER JOIN users u ON c.user_id = u.user_id
+                WHERE c.notice_id = ?
+                ORDER BY c.created_at DESC";
+
+$commentSTMT = $conn->prepare($commentsSql);
+$commentSTMT->bind_param("i", $noticeId);
+$commentSTMT->execute();
+
+$commentsResult = $commentSTMT->get_result();
+$comments = $commentsResult->fetch_all(MYSQLI_ASSOC);
+
 $sql = "SELECT n.notice_id, n.title, n.description, n.rarity,
                n.settlement, n.created_at, n.image_path,
                c.category_name,
@@ -18,7 +33,6 @@ $stmt->bind_param("i", $noticeId);
 $stmt->execute();
 $result = $stmt->get_result();
 $notice = $result->fetch_assoc();
-
 
 $viewerName       = $_SESSION['username']     ?? 'Username';
 $viewerRole       = $_SESSION['role']         ?? 'Role';
@@ -105,11 +119,56 @@ if ($notice) {
                             <button class="btn btn-primary btn-block" id="btn-accept">Accept</button>
                             <button class="btn btn-decline btn-block" id="btn-decline">Decline</button>
                         </div>
-
-                        <a class="view-comments-link" href="#comments">View comments</a>
                     </div>
 
                     <p class="notice-card-footer" style="text-align:center; margin-top:14px;">Expires in $daysLeft days</p>
+
+                    <!-- COMMENTS, now part of the same notice panel -->
+                    <div id="comments" style="margin-top:28px;">
+                        <hr class="divider-line">
+                        <h2 class="create-notice-heading">Comments</h2>
+
+                        <div class="comments-list">
+HTML;
+
+    if (count($comments) > 0) {
+        foreach ($comments as $comment) {
+            $commentText = htmlspecialchars($comment['comment']);
+            $commentDate = htmlspecialchars($comment['created_at']);
+            $commentUser = htmlspecialchars($comment['username']);
+            $commentRole = htmlspecialchars($comment['role']);
+
+            echo <<<HTML
+                            <div class="comment-card">
+                                <div class="comment-header">
+                                    <strong class="comment-user">$commentUser</strong>
+                                    <span class="comment-role">$commentRole</span>
+                                </div>
+                                <p>$commentText</p>
+                                <small>$commentDate</small>
+                            </div>
+HTML;
+        }
+    } else {
+        echo <<<HTML
+                            <p class="no-comments">No comments yet</p>
+HTML;
+    }
+
+    echo <<<HTML
+                        </div>
+
+                        <hr class="divider-line">
+                        <h2 class="create-notice-heading">Leave a comment</h2>
+
+                        <form action="../Database/comment_process.php" method="post">
+                            <input type="hidden" name="notice_id" value="$noticeId">
+                            <div class="field">
+                                <textarea name="comment" placeholder="Write your comment here..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Submit Comment</button>
+                        </form>
+                    </div>
 HTML;
 } else {
     echo <<<HTML
