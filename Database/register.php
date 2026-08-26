@@ -3,7 +3,7 @@
 require_once 'config.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: ../Pages/signin.php');
+    header('Location: ../Pages/signIn.php');
     exit;
 }
 
@@ -78,31 +78,8 @@ if (empty($error)) {
 
     if (!empty($error)) {
         $errorList = implode('<br>', array_map('htmlspecialchars', $error));
-
-        echo <<<HTML
-
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>Error The last light </title>
-        </head>
-        <body class="auth-page">
-
-        <div>
-            <H2> Couldn't create an account </H2>
-        </div>
-
-        <p>$errorList</p>
-
-        <a href="../Pages/signIn.php"> Try again. Go back to Sign In </a>
-
-        </body>
-        </html>
-        HTML;
-
-            exit;
+        header('Location: ../Pages/signIn.php?error=' . urlencode($errorList));
+        exit;
     }
 
     // Inserting my users
@@ -139,6 +116,3 @@ if (empty($error)) {
 
         exit;
     }
-
-
-

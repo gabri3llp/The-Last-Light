@@ -1,5 +1,15 @@
 <?php
 
+$errorBox = '';
+if (isset($_GET['error'])) {
+    $errorMsg = htmlspecialchars($_GET['error']);
+    $errorBox = <<<HTML
+        <div style="background: rgba(163, 42, 42, 0.25); border: 1px solid var(--crimson, #a32a2a); color: #ffffff; padding: 12px; border-radius: 4px; margin-bottom: 16px; font-size: 0.9rem; text-align: center; font-weight: bold; font-family: sans-serif;">
+            $errorMsg
+        </div>
+HTML;
+}
+
 echo <<<HTML
 <!DOCTYPE html>
 <html lang="en">
@@ -21,6 +31,7 @@ echo <<<HTML
         </div>
 
         <div class="auth-card">
+            $errorBox
             <form action="../Database/register.php" method="post">
 
                 <div class="field">

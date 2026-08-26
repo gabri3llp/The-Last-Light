@@ -26,26 +26,7 @@ if ($password === '') {
 
 if(!empty($error)) {
   $errorList = implode('<br>', array_map('htmlspecialchars', $error));
-  
-  echo <<<HTML
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Log In - The Last Light</title>
-        <link rel="stylesheet" href="../Style.css">
-    </head>
-    <body class="auth-page">
-        <div class="auth-card">
-            <h2> Could'nt log you in :( </h2>
-            <p>{$errorList}</p>
-            <a href="../Pages/login.php"> Try again </a>
-        </div>
-    </body>
-    </html>
-
-HTML;
+  header('Location: ../Pages/login.php?error=' . urlencode($errorList));
   exit();
 }
 
@@ -60,7 +41,7 @@ if ($result->num_rows === 0) {
     $stmt->close();
     $conn->close();
 
-    echo "invalid email or password.";
+    header('Location: ../Pages/login.php?error=' . urlencode('Invalid email or password.'));
     exit();
 }
 
@@ -70,7 +51,7 @@ if (!password_verify($password, $user['password_hash'])) {
     $stmt->close();
     $conn->close();
 
-    echo "invalid email or password.";
+    header('Location: ../Pages/login.php?error=' . urlencode('Invalid email or password.'));
     exit();
 }
 

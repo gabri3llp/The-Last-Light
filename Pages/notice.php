@@ -2,6 +2,8 @@
 
 require_once '../Database/config.php';
 
+session_start();
+
 $noticeId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
 //Getting Comments
@@ -119,6 +121,7 @@ if ($notice) {
                             <button class="btn btn-primary btn-block" id="btn-accept">Accept</button>
                             <button class="btn btn-decline btn-block" id="btn-decline">Decline</button>
                         </div>
+                        <p id="noticeStatusPopUp" style="text-align:center; margin-top:10px; font-weight:bold;"></p>
                     </div>
 
                     <p class="notice-card-footer" style="text-align:center; margin-top:14px;">Expires in $daysLeft days</p>
@@ -266,9 +269,23 @@ echo <<<HTML
 
 </div>
 
+
+<script>
+
+document.getElementById('btn-accept').addEventListener('click', function () {
+    document.getElementById('noticeStatusPopUp').textContent = 'Notice Accepted';
+});
+
+document.getElementById('btn-decline').addEventListener('click', function () {
+    document.getElementById('noticeStatusPopUp').textContent = 'Notice Declined';
+});
+
+</script>
+
 </body>
 </html>
 HTML;
 
 $stmt->close();
 $conn->close();
+

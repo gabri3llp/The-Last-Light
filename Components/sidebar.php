@@ -19,10 +19,6 @@
             <a href="profile.php" class="nav-item <?php echo ($current_page == 'profile.php') ? 'is-active' : ''; ?>" title="Profile">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             </a>
-
-            <a href="admin.php" class="nav-item <?php echo ($current_page == 'admin.php') ? 'is-active' : ''; ?>" title="Admin Dashboard">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M21 11H3"/><path d="M11 12v9"/><path d="M12 21H3"/><path d="M7 21v-4"/></svg>
-            </a>
         </nav>
     </div>
 
