@@ -150,22 +150,19 @@ erDiagram
 
 **Login**
 
-![Login wireframe](Wireframes/login.png)
+![Login wireframe](https://raw.githubusercontent.com/gabri3llp/The-Last-Light/main/Wireframes/login.png)
 
 **Home Feed**
 
-![Home feed wireframe](Wireframes/index.png)
+![Home feed wireframe](https://raw.githubusercontent.com/gabri3llp/The-Last-Light/main/Wireframes/index.png)
 
 **Admin Dashboard — "The All Knowing"**
 
-![Admin dashboard wireframe](Wireframes/admin.png)
+![Admin dashboard wireframe](https://raw.githubusercontent.com/gabri3llp/The-Last-Light/main/Wireframes/admin.png)
 
 **Profile**
 
-![Profile wireframe](Wireframes/profile.png)
-
----
-
+![Profile wireframe](https://raw.githubusercontent.com/gabri3llp/The-Last-Light/main/Wireframes/profile.png)
 
 
 ## ⚙️ Setup (XAMPP)
