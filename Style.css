@@ -30,13 +30,13 @@
 html, body {
   margin: 0;
   padding: 0;
-  background-color: var(--charcoal); /* Fix: Changed from background to background-color */
+  background-color: var(--charcoal);
   color: var(--ivory);
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.5;
   
-  /* Force container to fill the screen layout */
+
   width: 100%;
   min-height: 100vh; 
 }
@@ -71,9 +71,6 @@ textarea:focus-visible {
   * { animation: none !important; transition: none !important; }
 }
 
-/*
-   Buttons
-*/
 
 .btn {
   display: inline-flex;
@@ -106,9 +103,7 @@ textarea:focus-visible {
 .btn-block { width: 100%; }
 .btn-sm { padding: 8px 18px; font-size: 0.85rem; }
 
-/*
-   Auth pages (login.php / signIn.php)
-*/
+
 
 .auth-page {
   min-height: 100vh;
@@ -283,10 +278,7 @@ textarea:focus-visible {
 .auth-switch a { color: var(--moss); font-weight: 600; }
 .auth-switch a:hover { text-decoration: underline; }
 
-/*
-/*
-   App shell (index / notice / profile / admin)
-*/
+
 
 .app-shell {
   display: flex;
@@ -302,7 +294,7 @@ textarea:focus-visible {
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding: 24px 0; /* Balanced padding */
+  padding: 24px 0; 
   position: relative;
 }
 
@@ -335,7 +327,7 @@ textarea:focus-visible {
   border-radius: 2px;
 }
 
-/* ── ADDED: This aligns your navigation links straight down ── */
+
 .sidebar-nav {
   display: flex;
   flex-direction: column;
@@ -344,7 +336,7 @@ textarea:focus-visible {
   width: 100%;
 }
 
-/* ── ADDED: Sizing and color tracking properties for the links ── */
+
 .nav-item {
   display: flex;
   align-items: center;
@@ -366,7 +358,6 @@ textarea:focus-visible {
   background-color: rgba(109, 142, 88, 0.12);
 }
 
-/* ── FIXED: Aligned item to center instead of flex-end ── */
 .sidebar-bottom {
   display: flex; 
   flex-direction: column; 
@@ -393,9 +384,6 @@ textarea:focus-visible {
   padding: 20px 28px 40px;
 }
 
-/*
-   Home page (index.php)
-*/
 
 .index{
 background-image: url('./Imgs/indexBg.png');
@@ -540,9 +528,6 @@ background-image: url('./Imgs/indexBg.png');
   color: #e08c89;
 }
 
-/*
-   Notice / product detail page (notice.php)
-*/
 
 .notice-page {
   background-image: url('Imgs/noticeBg.png') !important;
@@ -683,9 +668,6 @@ background-image: url('./Imgs/indexBg.png');
   color: var(--ivory);
 }
 
-/*
-   Profile page (profile.php)
-*/
 .profile-page {
   background-image: url('Imgs/profileBg.png') !important;
   background-size: cover;
@@ -749,9 +731,7 @@ background-image: url('./Imgs/indexBg.png');
 .profile-tabs a { font-size: 1rem; color: var(--ivory-faint); padding-bottom: 12px; }
 .profile-tabs a.is-active { color: var(--moss); border-bottom: 2px solid var(--moss); }
 
-/*
-   Admin dashboard (admin.php)
-*/
+
 
 .admin-page {
   background-image: url('Imgs/adminBg.png') !important;
@@ -822,10 +802,6 @@ background-image: url('./Imgs/indexBg.png');
   color: var(--ivory-faint);
 }
 
-/*
-   Footer / brand mark component (Components/footer.php)
-*/
-
 .brand-mark-wrap {
   display: flex;
   align-items: flex-end;
@@ -839,16 +815,12 @@ background-image: url('./Imgs/indexBg.png');
 .brand-mark-wrap img { width: 24px; height: 24px; }
 
 
-/* If your footer is wrapped in a generic footer tag */
 footer {
   text-align: right;
   width: 100%;
   padding: 16px 20px;
 }
 
-/*
-   Responsive
-*/
 
 @media (max-width: 900px) {
   .notice-detail-grid { grid-template-columns: 1fr; }
@@ -863,3 +835,45 @@ footer {
   .field-row { flex-direction: column; }
 }
 
+.comment-section {
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 0 15px;
+}
+
+.comment-title {
+    text-align: center;
+    color: #e0e0e0;
+    font-size: 1.25rem;
+    margin-bottom: 16px;
+}
+
+.comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.comment-input {
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #1a1c1e;
+    color: #f0f0f0;
+    border: 1px solid #33373b;
+    border-radius: 6px;
+    padding: 12px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.comment-input:focus {
+    border-color: #555e68;
+}
+
+.comment-actions {
+    display: flex;
+    justify-content: flex-end;
+}

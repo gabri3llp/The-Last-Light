@@ -146,17 +146,16 @@ $pageTitle = $notice ? htmlspecialchars($notice['title']) : 'Notice not found';
                                 <?php endif; ?>
                             </div>
 
-                            <hr class="divider-line">
-                            <h2 class="create-notice-heading">Leave a comment</h2>
-
-                            <form action="../Database/comment_process.php" method="post">
-                                <input type="hidden" name="notice_id" value="<?= $noticeId ?>">
-                                <div class="field">
-                                    <textarea name="comment" placeholder="Write your comment here..." required></textarea>
-                                </div>
-                                <button type="submit" class="btn btn-primary btn-block">Submit Comment</button>
-                            </form>
-                        </div>
+            <div class="comment-section">
+                     <h3 class="comment-title">Leave a comment</h3>
+                    <form action="../Database/add_comment.php" method="POST" class="comment-form">
+                        <input type="hidden" name="notice_id" value="<?= $noticeId ?>">
+                        <textarea name="comment" class="comment-input" rows="4" placeholder="Write your comment here..." required></textarea>
+                     <div class="comment-actions">
+                        <button type="submit" class="btn btn-primary">Post Comment</button>
+                    </div>
+                    </form>
+             </div>
                     <?php else: ?>
                         <div class="notice-full-card">
                             <div class="notice-full-header">
