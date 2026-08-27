@@ -1,70 +1,72 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 require_once '../Database/config.php';
 
-session_start();
+$noticeId = (int)($_GET['id'] ?? 0);
+$userId   = (int)($_SESSION['user_id'] ?? $_SESSION['id'] ?? 0);
 
-$noticeId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+// Current logged-in user profile
+$user = [
+    'username'     => 'Username',
+    'role'         => 'Role',
+    'settlement'   => 'Settlement',
+    'trust_rating' => 3.0
+];
 
-//Getting Comments
+if ($userId > 0) {
+    $uStmt = $conn->prepare("SELECT username, role, settlement, trust_rating FROM users WHERE user_id = ?");
+    $uStmt->bind_param("i", $userId);
+    $uStmt->execute();
+    if ($userData = $uStmt->get_result()->fetch_assoc()) {
+        $user = $userData;
+    }
+    $uStmt->close();
+}
 
-$commentsSql = "SELECT c.comment, c.created_at, u.username, u.role
-                FROM comments c
-                INNER JOIN users u ON c.user_id = u.user_id
-                WHERE c.notice_id = ?
-                ORDER BY c.created_at DESC";
 
-$commentSTMT = $conn->prepare($commentsSql);
-$commentSTMT->bind_param("i", $noticeId);
-$commentSTMT->execute();
-
-$commentsResult = $commentSTMT->get_result();
-$comments = $commentsResult->fetch_all(MYSQLI_ASSOC);
-
-$sql = "SELECT n.notice_id, n.title, n.description, n.rarity,
-               n.settlement, n.created_at, n.image_path,
-               c.category_name,
-               u.username, u.role, u.trust_rating
-        FROM notices n
-        INNER JOIN categories c ON n.category_id = c.category_id
-        INNER JOIN users u      ON n.user_id      = u.user_id
-        WHERE n.notice_id = ?";
-
-$stmt = $conn->prepare($sql);
+$stmt = $conn->prepare("SELECT n.*, c.category_name, u.username, u.role, u.trust_rating
+                        FROM notices n
+                        INNER JOIN categories c ON n.category_id = c.category_id
+                        INNER JOIN users u ON n.user_id = u.user_id
+                        WHERE n.notice_id = ?");
 $stmt->bind_param("i", $noticeId);
 $stmt->execute();
-$result = $stmt->get_result();
-$notice = $result->fetch_assoc();
+$notice = $stmt->get_result()->fetch_assoc();
+$stmt->close();
 
-$viewerName       = $_SESSION['username']     ?? 'Username';
-$viewerRole       = $_SESSION['role']         ?? 'Role';
-$viewerSettlement = $_SESSION['settlement']   ?? 'Settlement';
-$viewerTrust      = $_SESSION['trust_rating'] ?? '3.0';
 
-$safeViewerName  = htmlspecialchars($viewerName);
-$safeViewerRole  = htmlspecialchars($viewerRole);
-$safeViewerSett  = htmlspecialchars($viewerSettlement);
-$safeViewerTrust = htmlspecialchars($viewerTrust);
+$comments = [];
+if ($notice) {
+    $cStmt = $conn->prepare("SELECT c.comment, c.created_at, u.username, u.role
+                             FROM comments c
+                             INNER JOIN users u ON c.user_id = u.user_id
+                             WHERE c.notice_id = ?
+                             ORDER BY c.created_at DESC");
+    $cStmt->bind_param("i", $noticeId);
+    $cStmt->execute();
+    $comments = $cStmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $cStmt->close();
+}
+
+$conn->close();
 
 $pageTitle = $notice ? htmlspecialchars($notice['title']) : 'Notice not found';
-
-echo <<<HTML
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>$pageTitle - The Last Light</title>
+    <title><?= $pageTitle ?> - The Last Light</title>
     <link rel="stylesheet" href="../Style.css">
 </head>
 <body>
 <div class="app-shell">
 
-HTML;
-
-include '../Components/sidebar.php';
-
-echo <<<HTML
+    <?php include '../Components/sidebar.php'; ?>
 
     <div class="main-area">
         <div class="crumb">Product</div>
@@ -75,121 +77,99 @@ echo <<<HTML
                 <section class="panel">
                     <h1 class="panel-title">Current Notices</h1>
 
-HTML;
-
-if ($notice) {
-    $title    = htmlspecialchars($notice['title']);
-    $rarity   = htmlspecialchars($notice['rarity']);
-    $location = htmlspecialchars($notice['settlement']);
-    $desc     = htmlspecialchars($notice['description']);
-    $poster   = htmlspecialchars($notice['username']);
-    $role     = htmlspecialchars($notice['role']);
-    $trust    = htmlspecialchars($notice['trust_rating']);
-
-    $createdTs = strtotime($notice['created_at']);
-    $daysLeft  = 7 - floor((time() - $createdTs) / 86400);
-
-    $imgFile = !empty($notice['image_path'])
-        ? htmlspecialchars($notice['image_path'])
-        : 'placeholder.jpg';
-    $imgTag = "<img src=\"../Imgs/notices/$imgFile\" alt=\"$title\">";
-
-    echo <<<HTML
-                    <div class="notice-full-card">
-                        <div class="notice-full-header">
-                            <div>
-                                <h2>$title</h2>
-                                <div class="notice-location">$location</div>
-                            </div>
-                            <span class="badge badge-rarity badge-$rarity">$rarity</span>
-                        </div>
-
-                        <p class="notice-full-desc">$desc</p>
-
-                        <div class="notice-full-image">$imgTag</div>
-
-                        <div class="notice-full-footer">
-                            <div class="avatar-circle"></div>
-                            <div class="notice-full-poster-info">
-                                <div class="label-sm">Trust: $trust &#9670;</div>
-                                <div class="label-sm">$role</div>
-                                <div class="merchant-name">$poster</div>
-                            </div>
-                        </div>
-
-                        <div class="notice-full-actions">
-                            <button class="btn btn-primary btn-block" id="btn-accept">Accept</button>
-                            <button class="btn btn-decline btn-block" id="btn-decline">Decline</button>
-                        </div>
-                        <p id="noticeStatusPopUp" style="text-align:center; margin-top:10px; font-weight:bold;"></p>
-                    </div>
-
-                    <p class="notice-card-footer" style="text-align:center; margin-top:14px;">Expires in $daysLeft days</p>
-
-                    <!-- COMMENTS, now part of the same notice panel -->
-                    <div id="comments" style="margin-top:28px;">
-                        <hr class="divider-line">
-                        <h2 class="create-notice-heading">Comments</h2>
-
-                        <div class="comments-list">
-HTML;
-
-    if (count($comments) > 0) {
-        foreach ($comments as $comment) {
-            $commentText = htmlspecialchars($comment['comment']);
-            $commentDate = htmlspecialchars($comment['created_at']);
-            $commentUser = htmlspecialchars($comment['username']);
-            $commentRole = htmlspecialchars($comment['role']);
-
-            echo <<<HTML
-                            <div class="comment-card">
-                                <div class="comment-header">
-                                    <strong class="comment-user">$commentUser</strong>
-                                    <span class="comment-role">$commentRole</span>
+                    <?php if ($notice): ?>
+                        <?php
+                            $daysLeft = 7 - floor((time() - strtotime($notice['created_at'])) / 86400);
+                            $imgFile  = !empty($notice['image_path']) ? htmlspecialchars($notice['image_path']) : 'placeholder.jpg';
+                        ?>
+                        <div class="notice-full-card">
+                            <div class="notice-full-header">
+                                <div>
+                                    <h2><?= htmlspecialchars($notice['title']) ?></h2>
+                                    <div class="notice-location"><?= htmlspecialchars($notice['settlement']) ?></div>
                                 </div>
-                                <p>$commentText</p>
-                                <small>$commentDate</small>
+                                <span class="badge badge-rarity badge-<?= htmlspecialchars($notice['rarity']) ?>">
+                                    <?= htmlspecialchars($notice['rarity']) ?>
+                                </span>
                             </div>
-HTML;
-        }
-    } else {
-        echo <<<HTML
-                            <p class="no-comments">No comments yet</p>
-HTML;
-    }
 
-    echo <<<HTML
+                            <p class="notice-full-desc"><?= htmlspecialchars($notice['description']) ?></p>
+
+                            <div class="notice-full-image">
+                                <img src="../Imgs/notices/<?= $imgFile ?>" alt="<?= htmlspecialchars($notice['title']) ?>">
+                            </div>
+
+                            <div class="notice-full-footer">
+                                <div class="avatar-circle"></div>
+                                <div class="notice-full-poster-info">
+                                    <div class="label-sm">Trust: <?= number_format((float)$notice['trust_rating'], 1) ?> &#9670;</div>
+                                    <div class="label-sm"><?= htmlspecialchars($notice['role']) ?></div>
+                                    <div class="merchant-name"><?= htmlspecialchars($notice['username']) ?></div>
+                                </div>
+                            </div>
+
+                            <div class="notice-full-actions">
+                                <form action="../Database/notice_action.php" method="post">
+                                    <input type="hidden" name="notice_id" value="<?= $noticeId ?>">
+                                    <input type="hidden" name="action" value="accept">
+                                    <button type="submit" class="btn btn-primary btn-block">Accept</button>
+                                </form>
+                                
+                                <form action="../Database/notice_action.php" method="post">
+                                    <input type="hidden" name="notice_id" value="<?= $noticeId ?>">
+                                    <input type="hidden" name="action" value="decline">
+                                    <button type="submit" class="btn btn-decline btn-block">Decline</button>
+                                </form>
+                            </div>
                         </div>
 
-                        <hr class="divider-line">
-                        <h2 class="create-notice-heading">Leave a comment</h2>
+                        <p class="notice-card-footer">Expires in <?= $daysLeft ?> days</p>
 
-                        <form action="../Database/comment_process.php" method="post">
-                            <input type="hidden" name="notice_id" value="$noticeId">
-                            <div class="field">
-                                <textarea name="comment" placeholder="Write your comment here..." required></textarea>
+                        <div id="comments">
+                            <hr class="divider-line">
+                            <h2 class="create-notice-heading">Comments</h2>
+
+                            <div class="comments-list">
+                                <?php if (!empty($comments)): ?>
+                                    <?php foreach ($comments as $comment): ?>
+                                        <div class="comment-card">
+                                            <div class="comment-header">
+                                                <strong class="comment-user"><?= htmlspecialchars($comment['username']) ?></strong>
+                                                <span class="comment-role"><?= htmlspecialchars($comment['role']) ?></span>
+                                            </div>
+                                            <p><?= htmlspecialchars($comment['comment']) ?></p>
+                                            <small><?= htmlspecialchars($comment['created_at']) ?></small>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <p class="no-comments">No comments yet</p>
+                                <?php endif; ?>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block">Submit Comment</button>
-                        </form>
-                    </div>
-HTML;
-} else {
-    echo <<<HTML
-                    <div class="notice-full-card">
-                        <div class="notice-full-header">
-                            <div>
-                                <h2>Notice not found</h2>
-                                <div class="notice-location">This sighting may have expired or never existed.</div>
-                            </div>
+
+                            <hr class="divider-line">
+                            <h2 class="create-notice-heading">Leave a comment</h2>
+
+                            <form action="../Database/comment_process.php" method="post">
+                                <input type="hidden" name="notice_id" value="<?= $noticeId ?>">
+                                <div class="field">
+                                    <textarea name="comment" placeholder="Write your comment here..." required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block">Submit Comment</button>
+                            </form>
                         </div>
-                        <p class="notice-full-desc">
-                            <a href="index.php" style="color: var(--moss);">Back to the notice board</a>
-                        </p>
-                    </div>
-HTML;
-}
-
-echo <<<HTML
+                    <?php else: ?>
+                        <div class="notice-full-card">
+                            <div class="notice-full-header">
+                                <div>
+                                    <h2>Notice not found</h2>
+                                    <div class="notice-location">This sighting may have expired or never existed.</div>
+                                </div>
+                            </div>
+                            <p class="notice-full-desc">
+                                <a href="index.php">Back to the notice board</a>
+                            </p>
+                        </div>
+                    <?php endif; ?>
                 </section>
 
                 <section class="panel">
@@ -197,14 +177,14 @@ echo <<<HTML
 
                     <div class="player-details-panel">
                         <div class="avatar-circle"></div>
-                        <div class="player-name">$safeViewerName</div>
+                        <div class="player-name"><?= htmlspecialchars($user['username']) ?></div>
                     </div>
 
                     <a class="edit-profile-link" href="profile.php">Edit profile</a>
 
-                    <div class="player-meta"><strong>Trust rating:</strong> $safeViewerTrust &#9670;</div>
-                    <div class="player-meta"><strong>Role:</strong> $safeViewerRole</div>
-                    <div class="player-meta"><strong>Settlement:</strong> $safeViewerSett</div>
+                    <div class="player-meta"><strong>Trust rating:</strong> <?= number_format((float)$user['trust_rating'], 1) ?> &#9670;</div>
+                    <div class="player-meta"><strong>Role:</strong> <?= htmlspecialchars($user['role']) ?></div>
+                    <div class="player-meta"><strong>Settlement:</strong> <?= htmlspecialchars($user['settlement']) ?></div>
 
                     <hr class="divider-line">
 
@@ -232,22 +212,22 @@ echo <<<HTML
                             </div>
                         </div>
                         <div class="field-row-uneven">
-    <div class="field field-rarity">
-        <select name="rarity" required>
-            <option value="" disabled selected>Rarity</option>
-            <option value="common">Common</option>
-            <option value="uncommon">Uncommon</option>
-            <option value="rare">Rare</option>
-            <option value="epic">Epic</option>
-            <option value="legendary">Legendary</option>
-            <option value="mythic">Mythic</option>
-        </select>
-    </div>
-<div class="field field-upload">
-        <input type="file" id="noticeImage" name="image" accept="image/jpeg,image/png" class="file-input-hidden">
-        <label for="noticeImage" class="file-label">Choose Photo</label>
-    </div>
-</div>
+                            <div class="field field-rarity">
+                                <select name="rarity" required>
+                                    <option value="" disabled selected>Rarity</option>
+                                    <option value="common">Common</option>
+                                    <option value="uncommon">Uncommon</option>
+                                    <option value="rare">Rare</option>
+                                    <option value="epic">Epic</option>
+                                    <option value="legendary">Legendary</option>
+                                    <option value="mythic">Mythic</option>
+                                </select>
+                            </div>
+                            <div class="field field-upload">
+                                <input type="file" id="noticeImage" name="image" accept="image/jpeg,image/png" class="file-input-hidden">
+                                <label for="noticeImage" class="file-label">Choose Photo</label>
+                            </div>
+                        </div>
                         <div class="field">
                             <input type="text" name="description" placeholder="Description">
                         </div>
@@ -268,24 +248,5 @@ echo <<<HTML
     </div>
 
 </div>
-
-
-<script>
-
-document.getElementById('btn-accept').addEventListener('click', function () {
-    document.getElementById('noticeStatusPopUp').textContent = 'Notice Accepted';
-});
-
-document.getElementById('btn-decline').addEventListener('click', function () {
-    document.getElementById('noticeStatusPopUp').textContent = 'Notice Declined';
-});
-
-</script>
-
 </body>
 </html>
-HTML;
-
-$stmt->close();
-$conn->close();
-
