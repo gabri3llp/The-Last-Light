@@ -162,7 +162,7 @@ erDiagram
 
 **Profile**
 
-![Profile wireframe](Wireframes/profile.png)
+![Profile wireframe](Assets/Wireframes/profile.png)
 
 ---
 
