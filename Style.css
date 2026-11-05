@@ -877,3 +877,255 @@ footer {
     display: flex;
     justify-content: flex-end;
 }
+
+/* Player details */
+
+.player-details-panel {
+    padding: 36px;
+    min-height: 420px;
+}
+
+.player-details-panel .avatar-circle {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 20px;
+}
+
+.player-details-panel .player-name {
+    font-size: 1.8rem;
+    margin-bottom: 22px;
+}
+
+.player-meta {
+    font-size: 1.05rem;
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.player-details-panel .edit-profile-link {
+    font-size: 1rem;
+    margin-top: 4px;
+    margin-bottom: 18px;
+}
+
+/* Buttons */
+
+.btn {
+    transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.btn-primary:hover {
+    background-color: var(--moss);
+}
+
+.btn-decline:hover {
+    background-color: #a84945;
+}
+
+.btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.btn-primary-sm,
+.btn-decline-sm {
+    display: inline-block;
+    cursor: pointer;
+    transition: background-color 0.2s ease,
+                color 0.2s ease,
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                filter 0.2s ease;
+}
+
+.btn-primary-sm:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.2);
+}
+
+.btn-decline-sm:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.2);
+}
+
+/* Navigation */
+
+.tab-nav .tab-btn {
+    display: inline-block;
+    cursor: pointer;
+    transition: background-color 0.2s ease,
+                color 0.2s ease,
+                border-color 0.2s ease,
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+.tab-nav .tab-btn:hover {
+    background-color: var(--forest-green) !important;
+    color: var(--ivory) !important;
+    border-color: var(--moss) !important;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.tab-nav .tab-btn.is-active {
+    background-color: var(--forest-green);
+    color: var(--ivory);
+    border-color: var(--forest-green);
+}
+
+.tab-nav .tab-btn.is-active:hover {
+    background-color: var(--moss) !important;
+    border-color: var(--moss) !important;
+}
+
+.tab-filter {
+    cursor: pointer;
+    transition: background-color 0.2s ease,
+                color 0.2s ease,
+                border-color 0.2s ease,
+                transform 0.2s ease;
+}
+
+.tab-filter:hover {
+    background-color: var(--forest-green);
+    color: var(--ivory);
+    border-color: var(--moss);
+    transform: translateY(-2px);
+}
+
+/* Notice cards */
+
+.notice-card {
+    transition: border-color 0.2s ease,
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+.notice-card:hover {
+    border-color: var(--moss);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+/* Profile */
+
+.profile-name-row a,
+.profile-tabs a,
+.edit-profile-link {
+    transition: color 0.2s ease, filter 0.2s ease;
+}
+
+.profile-name-row a:hover,
+.profile-tabs a:hover,
+.edit-profile-link:hover {
+    color: var(--moss);
+    filter: brightness(1.2);
+}
+
+.profile-page .notice-card-actions-row .btn-primary-sm:hover {
+    background-color: var(--moss) !important;
+    color: var(--ivory) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.profile-page .notice-card-actions-row .btn-decline-sm:hover {
+    background-color: var(--crimson) !important;
+    color: var(--ivory) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+/* Press effects */
+
+.tab-nav .tab-btn:active,
+.profile-page .notice-card-actions-row .btn-primary-sm:active,
+.profile-page .notice-card-actions-row .btn-decline-sm:active {
+    transform: translateY(0) scale(0.97);
+}
+
+/* Authentication */
+
+.auth-card {
+    max-width: 440px;
+    padding: 38px 36px 40px;
+}
+
+.auth-brand {
+    margin-bottom: 34px;
+}
+
+.auth-brand h1 {
+    font-size: 2.5rem;
+}
+
+.auth-brand p {
+    font-size: 1.2rem;
+}
+
+.auth-card .field label {
+    font-size: 0.88rem;
+    margin-bottom: 8px;
+}
+
+.auth-card .field input:not([type="radio"]) {
+    padding: 14px 16px;
+    font-size: 1.05rem;
+}
+
+.auth-card .btn {
+    padding: 15px 28px;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.auth-switch {
+    font-size: 1rem;
+    margin-top: 22px;
+}
+
+.auth-switch a {
+    font-size: 1.05rem;
+}
+
+.auth-divider {
+    font-size: 0.9rem;
+    margin: 22px 0;
+}
+
+/* Responsive */
+
+@media (max-width: 560px) {
+    .auth-card {
+        max-width: 100%;
+        padding: 28px 22px;
+    }
+
+    .auth-brand h1 {
+        font-size: 1.9rem;
+    }
+
+    .auth-brand p {
+        font-size: 1rem;
+    }
+
+    .player-details-panel {
+        min-height: auto;
+        padding: 26px 20px;
+    }
+
+    .player-details-panel .avatar-circle {
+        width: 100px;
+        height: 100px;
+    }
+
+    .player-details-panel .player-name {
+        font-size: 1.5rem;
+    }
+}
